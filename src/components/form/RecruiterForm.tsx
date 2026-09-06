@@ -74,7 +74,7 @@ function RecruiterForm() {
 
         <button type="submit">Vérifier l’opportunité</button>
       </form>
-      <pre>{JSON.stringify(formData, null, 2)}</pre>;
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </section>
   );
 }
