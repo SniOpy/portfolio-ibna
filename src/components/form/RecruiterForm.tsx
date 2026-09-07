@@ -1,19 +1,36 @@
 import { useState, type ChangeEvent } from 'react';
 
+type RecruiterFormData = {
+  name: string;
+  company: string;
+  email: string;
+  contract: string;
+  workMode: string;
+  message: string;
+};
+
+const initialFormData: RecruiterFormData = {
+  name: '',
+  company: '',
+  email: '',
+  contract: '',
+  workMode: '',
+  message: '',
+};
+
 function RecruiterForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    company: '',
-    email: '',
-    contract: '',
-    workMode: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState<RecruiterFormData>(initialFormData);
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [event.currentTarget.name]: event.currentTarget.value });
+    const fieldName = event.currentTarget.name as keyof RecruiterFormData;
+    const fieldValue = event.currentTarget.value;
+
+    setFormData((previousFormData) => ({
+      ...previousFormData,
+      [fieldName]: fieldValue,
+    }));
   };
 
   return (
