@@ -33,10 +33,15 @@ function RecruiterForm() {
     }));
   };
 
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(formData);
+  };
+
   return (
     <section>
       <h2>Tester mon profil avec une opportunité</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name">Nom du recruteur</label>
           <input id="name" name="name" type="text" value={formData.name} onChange={handleChange} />
