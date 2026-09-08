@@ -90,7 +90,6 @@ function RecruiterForm() {
     const errors = validateForm();
 
     setFormErrors(errors);
-    console.log(JSON.stringify(errors, null, 2));
 
     if (Object.keys(errors).length > 0) {
       return; // arrête immédiatement handleSubmit
