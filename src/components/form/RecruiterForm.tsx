@@ -67,7 +67,7 @@ function RecruiterForm() {
     }
 
     if (!formData.contract.trim()) {
-      errors.contract = 'Séléctionnez le type de contract';
+      errors.contract = 'Sélectionnez le type de contrat';
     }
 
     if (!formData.workMode.trim()) {
@@ -75,7 +75,7 @@ function RecruiterForm() {
     }
 
     if (!formData.message.trim()) {
-      errors.message = 'Renseigner un message';
+      errors.message = 'Renseignez un message';
     } else if (formData.message.trim().length < 20) {
       errors.message = 'Votre message doit au moins avoir 20 caractères';
     }
@@ -88,9 +88,8 @@ function RecruiterForm() {
 
     const errors = validateForm();
 
-    console.log(JSON.stringify(formErrors, null, 2));
-
     setFormErrors(errors);
+    console.log(JSON.stringify(errors, null, 2));
 
     if (Object.keys(errors).length > 0) {
       return; // arrête immédiatement handleSubmit
