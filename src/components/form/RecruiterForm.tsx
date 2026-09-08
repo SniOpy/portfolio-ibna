@@ -31,6 +31,7 @@ function RecruiterForm() {
   // State
   const [formData, setFormData] = useState<RecruiterFormData>(initialFormData);
   const [formErrors, setFormErrors] = useState<RecruiterFormErrors>({});
+  const [isSummaryVisible, setIsSummaryVisible] = useState(false); // false = formulaire, true = récap
 
   // Comportement
   const handleChange = (
@@ -71,13 +72,13 @@ function RecruiterForm() {
     }
 
     if (!formData.workMode.trim()) {
-      errors.workMode = 'Séléctionnez un mode de travail';
+      errors.workMode = 'Sélectionnez un mode de travail';
     }
 
     if (!formData.message.trim()) {
       errors.message = 'Renseignez un message';
     } else if (formData.message.trim().length < 20) {
-      errors.message = 'Votre message doit au moins avoir 20 caractères';
+      errors.message = 'Le message doit contenir au moins 20 caractères';
     }
 
     return errors;
@@ -95,75 +96,131 @@ function RecruiterForm() {
       return; // arrête immédiatement handleSubmit
     }
 
-    console.log('Formulaire soumis avec succès', formData);
+    setIsSummaryVisible(true);
   };
 
   // Affichage
   return (
     <section>
-      <h2>Tester mon profil avec une opportunité</h2>
-      <form onSubmit={handleSubmit} noValidate>
+      {isSummaryVisible ? (
         <div>
-          <label htmlFor="name">Nom du recruteur</label>
-          <input id="name" name="name" type="text" value={formData.name} onChange={handleChange} />
-          {formErrors.name && <p>{formErrors.name}</p>}
-        </div>
+          <h2>Récapitulatif de l’opportunité</h2>
 
-        <div>
-          <label htmlFor="company">Entreprise</label>
-          <input
-            id="company"
-            name="company"
-            type="text"
-            value={formData.company}
-            onChange={handleChange}
-          />
-          {formErrors.company && <p>{formErrors.company}</p>}
-        </div>
+          <p>
+            <strong>Recruteur :</strong> {formData.name}
+          </p>
 
-        <div>
-          <label htmlFor="email">Adresse e-mail</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {formErrors.email && <p>{formErrors.email}</p>}
-        </div>
+          <p>
+            <strong>Entreprise :</strong> {formData.company}
+          </p>
 
-        <div>
-          <label htmlFor="contract">Type de contrat</label>
-          <select id="contract" name="contract" value={formData.contract} onChange={handleChange}>
-            <option value="">Sélectionner un contrat</option>
-            <option value="CDI">CDI</option>
-            <option value="CDD">CDD</option>
-            <option value="FREELANCE">Freelance</option>
-          </select>
-          {formErrors.contract && <p>{formErrors.contract}</p>}
-        </div>
+          <p>
+            <strong>Adresse e-mail :</strong> {formData.email}
+          </p>
 
-        <div>
-          <label htmlFor="workMode">Mode de travail</label>
-          <select id="workMode" name="workMode" value={formData.workMode} onChange={handleChange}>
-            <option value="">Sélectionner un mode de travail</option>
-            <option value="FULL_REMOTE">Télétravail</option>
-            <option value="HYBRIDE">Hybride</option>
-            <option value="PRESENTIEL">Présentiel</option>
-          </select>
-          {formErrors.workMode && <p>{formErrors.workMode}</p>}
-        </div>
+          <p>
+            <strong>Type de contrat :</strong> {formData.contract}
+          </p>
 
-        <div>
-          <label htmlFor="message">Message</label>
-          <textarea id="message" name="message" value={formData.message} onChange={handleChange} />
-          {formErrors.message && <p>{formErrors.message}</p>}
-        </div>
+          <p>
+            <strong>Mode de travail :</strong> {formData.workMode}
+          </p>
 
-        <button type="submit">Vérifier l’opportunité</button>
-      </form>
-      <pre>{JSON.stringify(formData, null, 2)}</pre>
+          <p>
+            <strong>Message :</strong> {formData.message}
+          </p>
+
+          <button type="button" onClick={() => setIsSummaryVisible(false)}>
+            Modifier
+          </button>
+        </div>
+      ) : (
+        <>
+          <h2>Tester mon profil avec une opportunité</h2>
+          <form onSubmit={handleSubmit} noValidate>
+            <div>
+              <label htmlFor="name">Nom du recruteur</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              {formErrors.name && <p>{formErrors.name}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="company">Entreprise</label>
+              <input
+                id="company"
+                name="company"
+                type="text"
+                value={formData.company}
+                onChange={handleChange}
+              />
+              {formErrors.company && <p>{formErrors.company}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="email">Adresse e-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {formErrors.email && <p>{formErrors.email}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="contract">Type de contrat</label>
+              <select
+                id="contract"
+                name="contract"
+                value={formData.contract}
+                onChange={handleChange}
+              >
+                <option value="">Sélectionner un contrat</option>
+                <option value="CDI">CDI</option>
+                <option value="CDD">CDD</option>
+                <option value="Freelance">Freelance</option>
+              </select>
+              {formErrors.contract && <p>{formErrors.contract}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="workMode">Mode de travail</label>
+              <select
+                id="workMode"
+                name="workMode"
+                value={formData.workMode}
+                onChange={handleChange}
+              >
+                <option value="">Sélectionner un mode de travail</option>
+                <option value="Télétravail">Télétravail</option>
+                <option value="Hybride">Hybride</option>
+                <option value="Présentiel">Présentiel</option>
+              </select>
+              {formErrors.workMode && <p>{formErrors.workMode}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+              />
+              {formErrors.message && <p>{formErrors.message}</p>}
+            </div>
+
+            <button type="submit">Vérifier l’opportunité</button>
+          </form>
+        </>
+      )}
     </section>
   );
 }
