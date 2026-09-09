@@ -1,100 +1,31 @@
-import { useState, type ChangeEvent } from 'react';
-
-type RecruiterFormData = {
-  name: string;
-  company: string;
-  email: string;
-  contract: string;
-  workMode: string;
-  message: string;
-};
-
-type RecruiterFormErrors = {
-  name?: string;
-  company?: string;
-  email?: string;
-  contract?: string;
-  workMode?: string;
-  message?: string;
-};
-
-const initialFormData: RecruiterFormData = {
-  name: '',
-  company: '',
-  email: '',
-  contract: '',
-  workMode: '',
-  message: '',
-};
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { recruiterFormSchema, type RecruiterFormData } from './recruiterFormSchema';
 
 function RecruiterForm() {
   // State
-  const [formData, setFormData] = useState<RecruiterFormData>(initialFormData);
-  const [formErrors, setFormErrors] = useState<RecruiterFormErrors>({});
-  const [isSummaryVisible, setIsSummaryVisible] = useState(false); // false = formulaire, true = récap
+  const [isSummaryVisible, setIsSummaryVisible] = useState(false);
 
-  // Comportement
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const fieldName = event.currentTarget.name as keyof RecruiterFormData;
-    const fieldValue = event.currentTarget.value;
+  const [submittedData, setSubmittedData] = useState<RecruiterFormData | null>(null);
 
-    setFormData((previousFormData) => ({
-      ...previousFormData,
-      [fieldName]: fieldValue,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RecruiterFormData>({
+    resolver: zodResolver(recruiterFormSchema),
 
-  const validateForm = () => {
-    const errors: RecruiterFormErrors = {};
+    defaultValues: {
+      name: '',
+      company: '',
+      email: '',
+      message: '',
+    },
+  });
 
-    if (!formData.name.trim()) {
-      errors.name = 'Le nom du recruteur est obligatoire';
-    }
-
-    if (!formData.company.trim()) {
-      errors.company = "Le nom de l'entreprise est obligatoire";
-    }
-
-    if (!formData.email.trim()) {
-      errors.email = "L'adresse email est obligatoire";
-    } else {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!emailPattern.test(formData.email)) {
-        errors.email = 'Renseignez une adresse email valide';
-      }
-    }
-
-    if (!formData.contract.trim()) {
-      errors.contract = 'Sélectionnez le type de contrat';
-    }
-
-    if (!formData.workMode.trim()) {
-      errors.workMode = 'Sélectionnez un mode de travail';
-    }
-
-    if (!formData.message.trim()) {
-      errors.message = 'Renseignez un message';
-    } else if (formData.message.trim().length < 20) {
-      errors.message = 'Le message doit contenir au moins 20 caractères';
-    }
-
-    return errors;
-  };
-
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const errors = validateForm();
-
-    setFormErrors(errors);
-
-    if (Object.keys(errors).length > 0) {
-      return; // arrête immédiatement handleSubmit
-    }
-
+  const onSubmit = (data: RecruiterFormData) => {
+    setSubmittedData(data);
     setIsSummaryVisible(true);
   };
 
@@ -106,27 +37,27 @@ function RecruiterForm() {
           <h2>Récapitulatif de l’opportunité</h2>
 
           <p>
-            <strong>Recruteur :</strong> {formData.name}
+            <strong>Recruteur :</strong> {submittedData?.name}
           </p>
 
           <p>
-            <strong>Entreprise :</strong> {formData.company}
+            <strong>Entreprise :</strong> {submittedData?.company}
           </p>
 
           <p>
-            <strong>Adresse e-mail :</strong> {formData.email}
+            <strong>Adresse e-mail :</strong> {submittedData?.email}
           </p>
 
           <p>
-            <strong>Type de contrat :</strong> {formData.contract}
+            <strong>Type de contrat :</strong> {submittedData?.contract}
           </p>
 
           <p>
-            <strong>Mode de travail :</strong> {formData.workMode}
+            <strong>Mode de travail :</strong> {submittedData?.workMode}
           </p>
 
           <p>
-            <strong>Message :</strong> {formData.message}
+            <strong>Message :</strong> {submittedData?.message}
           </p>
 
           <button type="button" onClick={() => setIsSummaryVisible(false)}>
@@ -136,84 +67,55 @@ function RecruiterForm() {
       ) : (
         <>
           <h2>Tester mon profil avec une opportunité</h2>
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div>
               <label htmlFor="name">Nom du recruteur</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-              />
-              {formErrors.name && <p>{formErrors.name}</p>}
+              <input id="name" type="text" {...register('name')} />
+              {errors.name && <p>{errors.name.message}</p>}
             </div>
 
             <div>
               <label htmlFor="company">Entreprise</label>
-              <input
-                id="company"
-                name="company"
-                type="text"
-                value={formData.company}
-                onChange={handleChange}
-              />
-              {formErrors.company && <p>{formErrors.company}</p>}
+              <input id="company" type="text" {...register('company')} />
+              {errors.company && <p>{errors.company.message}</p>}
             </div>
 
             <div>
               <label htmlFor="email">Adresse e-mail</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {formErrors.email && <p>{formErrors.email}</p>}
+              <input id="email" type="email" {...register('email')} />
+              {errors.email && <p>{errors.email.message}</p>}
             </div>
 
             <div>
               <label htmlFor="contract">Type de contrat</label>
-              <select
-                id="contract"
-                name="contract"
-                value={formData.contract}
-                onChange={handleChange}
-              >
+
+              <select id="contract" {...register('contract')}>
                 <option value="">Sélectionner un contrat</option>
                 <option value="CDI">CDI</option>
                 <option value="CDD">CDD</option>
                 <option value="Freelance">Freelance</option>
               </select>
-              {formErrors.contract && <p>{formErrors.contract}</p>}
+
+              {errors.contract && <p>{errors.contract.message}</p>}
             </div>
 
             <div>
               <label htmlFor="workMode">Mode de travail</label>
-              <select
-                id="workMode"
-                name="workMode"
-                value={formData.workMode}
-                onChange={handleChange}
-              >
+
+              <select id="workMode" {...register('workMode')}>
                 <option value="">Sélectionner un mode de travail</option>
                 <option value="Télétravail">Télétravail</option>
                 <option value="Hybride">Hybride</option>
                 <option value="Présentiel">Présentiel</option>
               </select>
-              {formErrors.workMode && <p>{formErrors.workMode}</p>}
+
+              {errors.workMode && <p>{errors.workMode.message}</p>}
             </div>
 
             <div>
               <label htmlFor="message">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-              />
-              {formErrors.message && <p>{formErrors.message}</p>}
+              <textarea id="message" {...register('message')} />
+              {errors.message && <p>{errors.message.message}</p>}
             </div>
 
             <button type="submit">Vérifier l’opportunité</button>
